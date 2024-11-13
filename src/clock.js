@@ -1,4 +1,3 @@
-
 import React, { Component } from 'react';
 
 class Clock extends Component {
@@ -9,8 +8,9 @@ class Clock extends Component {
       session_label: "Sessions",
       breakLength: 5,
       sessionLength: 25, // Represented in minutes
-      timer: 25 * 60, // Countdown timer in seconds
+      timer: 25 * 60, // Countdown timer in seconds default session timer
       intervalId: null, // Track the timer interval
+      isSession: true // Track whether it's currently a session or break period
     };
   }
 
@@ -54,14 +54,15 @@ class Clock extends Component {
       sessionLength: 25,
       timer: 25 * 60,
       intervalId: null,
+      session_label: "Sessions", // Reset session label on reset
+      isSession: true // Reset to session
     });
-    
+
     const beep = document.getElementById("beep");
     if (beep) {
       beep.pause();
       beep.currentTime = 0;
     }
-
   };
 
   formatTime = (time) => {
@@ -79,16 +80,30 @@ class Clock extends Component {
       const intervalId = setInterval(() => {
         this.setState((prevState) => {
           if (prevState.timer === 0) {
+            // Play sound when timer hits 0
+            const beep = document.getElementById("beep");
+            if (beep) beep.play();  // New audio play
             
-            const beep = document.getElementById("beep"); ///// new audio 
-            if (beep) beep.play();  ////// new audio
-            
-            clearInterval(intervalId); // Stop timer when it reaches 0
-            return { intervalId: null };
+            // Switch between session and break countdowns
+            if (prevState.isSession) {
+              // Switch to break
+              return {
+                session_label: "Break",
+                timer: prevState.breakLength * 60,
+                isSession: false
+              };
+            } else {
+              // Switch to session
+              return {
+                session_label: "Sessions",
+                timer: prevState.sessionLength * 60,
+                isSession: true
+              };
+            }
           }
           return { timer: prevState.timer - 1 }; // Decrease timer every second
         });
-      }, 1000); // Decrease session every second
+      }, 1000); // Decrease session or break every second
       this.setState({ intervalId });
     }
   };
@@ -123,7 +138,7 @@ class Clock extends Component {
 
         {/* Session container */}
         <div id="timer-label">
-          <h1>{this.state.session_label}</h1>
+          <h1>{this.state.session_label}</h1> {/* Display current session/break */}
           <div id="time-left">{this.formatTime(this.state.timer)}</div>
         </div>
         <div className="timer-control">
@@ -133,8 +148,8 @@ class Clock extends Component {
           <button id="reset" onClick={this.reset}>
             Reset
           </button>
-          {/*Audio beep sound */}
-        <audio id="beep" src="https://www.pacdv.com/sounds/interface_sound_effects/beep-9.wav"></audio>
+          {/* Audio beep sound */}
+          <audio id="beep" src="https://www.pacdv.com/sounds/interface_sound_effects/beep-9.wav"></audio>
         </div>
       </div>
     );
