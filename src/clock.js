@@ -55,6 +55,13 @@ class Clock extends Component {
       timer: 25 * 60,
       intervalId: null,
     });
+    
+    const beep = document.getElementById("beep");
+    if (beep) {
+      beep.pause();
+      beep.currentTime = 0;
+    }
+
   };
 
   formatTime = (time) => {
@@ -72,6 +79,10 @@ class Clock extends Component {
       const intervalId = setInterval(() => {
         this.setState((prevState) => {
           if (prevState.timer === 0) {
+            
+            const beep = document.getElementById("beep"); ///// new audio 
+            if (beep) beep.play();  ////// new audio
+            
             clearInterval(intervalId); // Stop timer when it reaches 0
             return { intervalId: null };
           }
@@ -122,6 +133,8 @@ class Clock extends Component {
           <button id="reset" onClick={this.reset}>
             Reset
           </button>
+          {/*Audio beep sound */}
+        <audio id="beep" src="https://www.pacdv.com/sounds/interface_sound_effects/beep-9.wav"></audio>
         </div>
       </div>
     );
