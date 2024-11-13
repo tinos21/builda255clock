@@ -115,7 +115,7 @@ class Clock extends Component {
         {/* Break control level increase and decrease */}
         <div className="control-break-level">
           <div id="break-label">Break Length</div>
-          <button className="btn btn-primary" onClick={this.decrementBreak}>
+          <button className="btn btn-primary" id="break-decrement" onClick={this.decrementBreak}>
             <i className="bi bi-arrow-down"></i>
           </button>
           <div className="btn-level" id="break-length">{this.state.breakLength}</div>
